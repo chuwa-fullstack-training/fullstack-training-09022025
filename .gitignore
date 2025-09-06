@@ -9,6 +9,12 @@ pre_draw/
 books/
 .idea/
 .env
+.vscode
 
 marp-diagrams/
+marp-config/
 projects/
+scripts
+
+CLAUDE.md
+.claude
