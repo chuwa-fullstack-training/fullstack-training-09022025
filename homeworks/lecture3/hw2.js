@@ -3,5 +3,5 @@
  * console.log(sum(2, 3) === 5)
  */
 function sum() {
-    // implement here
+  // implement here
 }
