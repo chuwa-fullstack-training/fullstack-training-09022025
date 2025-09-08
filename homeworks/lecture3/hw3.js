@@ -1,5 +1,11 @@
 function counter() {
-    // implement here
+    let total = 0;
+    return function(n){
+      if(typeof n === "number"){ //typeof 对应的所有都是字符串
+        total += n;
+      }
+      return total;
+    }
 }
 
 let count = counter();

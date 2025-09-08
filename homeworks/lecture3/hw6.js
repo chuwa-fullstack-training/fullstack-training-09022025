@@ -18,12 +18,39 @@
  * 1 <= nums[i] <= 100
  */
 function numIdenticalPairs(nums) {
-  // implement here
+  let count = {}; // 记录每个数字出现次数
+  let result = 0;
+
+  for (let num of nums) {
+    if (count[num]) {
+      result += count[num]; // 已经出现过 count[num] 次，可以组成这么多对
+      count[num]++;
+    } else {
+      count[num] = 1;
+    }
+  }
+  return result;
 }
 
 /**
  * Given a string s, remove the vowels 'a', 'e', 'i', 'o', and 'u' from it, and return the new string.
  */
 function removeVowels(s) {
-  // implement here
+  let vowels = new Set(['a', 'e', 'i', 'o', 'u']);
+  let result = '';
+  for (let ch of s) {
+    if (!vowels.has(ch)) {
+      result += ch;
+    }
+  }
+  return result;
 }
+
+//test
+
+console.log(numIdenticalPairs([1,2,3,1,1,3])); // 4
+console.log(numIdenticalPairs([1,1,1,1]));     // 6
+console.log(numIdenticalPairs([1,2,3]));       // 0
+
+console.log(removeVowels("leetcodeisacommunityforcoders")); // "ltcdscmmntyfrcdrs"
+console.log(removeVowels("aeiou"));                         // ""
