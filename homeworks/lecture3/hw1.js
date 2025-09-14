@@ -23,7 +23,7 @@ function pickCoins() {
 }
 pickCoins();
 
-//simpler solution？
+//simpler solution？这题想考察什么？
 /*
 function pickCoins_math2() {
   const res = [];
