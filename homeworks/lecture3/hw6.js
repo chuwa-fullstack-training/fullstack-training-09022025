@@ -19,11 +19,33 @@
  */
 function numIdenticalPairs(nums) {
   // implement here
+  let freq = {}
+  for (let num of nums) {
+    freq[num] = (freq[num] || 0) + 1
+  }
+  let res = 0
+  for (let x of Object.values(freq)) {
+    res += x * (x - 1) / 2
+  }
+  return res
 }
+
+// Test
+const assert = require("assert")
+assert.strictEqual(numIdenticalPairs([1,2,3,1,1,3]), 4)
+assert.strictEqual(numIdenticalPairs([1,1,1,1]), 6)
+assert.strictEqual(numIdenticalPairs([1,2,3]), 0)
+console.log("numIdenticalPairs: All Test Cases Passed!")
 
 /**
  * Given a string s, remove the vowels 'a', 'e', 'i', 'o', and 'u' from it, and return the new string.
  */
 function removeVowels(s) {
   // implement here
+  return [...s].filter(ch => !"aeiou".includes(ch.toLowerCase())).join("")
 }
+
+// Test
+assert.strictEqual(removeVowels("leetcode"), "ltcd")
+assert.strictEqual(removeVowels("cindy"), "cndy")
+console.log("removeVowels: All Test Cases Passed!")
