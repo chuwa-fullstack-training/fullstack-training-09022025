@@ -10,6 +10,11 @@ new Promise((resolve, reject) => {
   reject('f');
 }).then(result => console.log(result));
 
+// Output: a c e d b
+// Sync (main thread): a, c, e
+// Microtask (Promise.then): d
+// Macrotask (setTimeout 0): b
+
 // 2
 const fn = () =>
   new Promise((resolve, reject) => {
@@ -22,3 +27,8 @@ fn().then(res => {
 });
 
 console.log('start');
+
+// Output: 1 start success
+// Sync (main thread): 1 start
+// Microtask (Promise.then): success
+// Promise executor runs synchronously; .then callbacks run as microtasks.
