@@ -18,4 +18,43 @@
  * 2. response.writeHead(200, { contentType: 'application/json' })
  */
 
-// your code here
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+    const { url, method } = req;
+    if (method === "GET") {
+        // Parse URL
+        const urlParsed = new URL("http://localhost:3000" + url);
+        // Get parameter
+        const time = urlParsed.searchParams.get("iso");
+        if (time === NaN) {
+            res.end("Wrong parameter provided");
+        }
+        // Parse time
+        const dateObject = new Date(time);
+
+        if (urlParsed.pathname === "/api/parsetime") {
+            const result = {
+                hour: dateObject.getUTCHours(),
+                minute: dateObject.getUTCMinutes(),
+                second: dateObject.getUTCSeconds(),
+            };
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.write(JSON.stringify(result));
+            res.end();
+        } else if (urlParsed.pathname === "/api/unixtime") {
+            const result = { unixtime: dateObject.getTime() };
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.write(JSON.stringify(result));
+            res.end();
+        } else {
+            res.end("404 API not found");
+        }
+    } else {
+        res.end("Unsupported method");
+    }
+});
+
+server.listen(3000, () => {
+    console.log("Server is running on port 3000");
+});

@@ -13,4 +13,21 @@
  *    e.g. node hw1.js currentDir txt - process.argv[2] is `currentDir`, process.argv[3] is `txt`
  */
 
-// your code here
+const fs = require("fs");
+const path = require("path");
+
+const currentDir = process.argv[2];
+const extension = "." + process.argv[3]; // Modify to match the output of path.extname()
+
+// /Users/simon/Desktop/Chuwa
+fs.readdir(currentDir, (err, files) => {
+    if (err) {
+        console.error("Error reading directory:", err);
+        return;
+    }
+    files.forEach((file) => {
+        if (path.extname(file) === extension) {
+            console.log(file);
+        }
+    });
+});
