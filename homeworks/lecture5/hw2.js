@@ -9,7 +9,8 @@
  */
 function reverseWords(str) {
   // your code here
+  return str.join("").split(" ").reverse().join(" ");
 }
 
-const input = 'the sky is blue'.split(''); // ['t', 'h', 'e', ' ', 's', 'k', 'y', ' ', 'i', 's', ' ', 'b', 'l', 'u', 'e']
+const input = "the sky is blue".split(""); // ['t', 'h', 'e', ' ', 's', 'k', 'y', ' ', 'i', 's', ' ', 'b', 'l', 'u', 'e']
 reverseWords(input);

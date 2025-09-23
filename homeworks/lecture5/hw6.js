@@ -9,26 +9,38 @@ function sequencePromise(urls) {
   function fetchOne(url) {
     // for `getJSON` function you can choose either from the implementation of hw5 or `fetch` version provided by browser
     // if you use `fetch`, you have to use browser console to test this homework
-    return getJSON(url).then(response => results.push(response));
+    return getJSON(url).then((response) => results.push(response));
   }
   // implement your code here
+  let promiseChain = Promise.resolve();
 
-  return results;
+  urls.forEach((url) => {
+    promiseChain = promiseChain.then(() => fetchOne(url));
+  });
+
+  return promiseChain.then(() => results);
 }
 
-// option 1
 function getJSON(url) {
-  // this is from hw5
+  return fetch(url).then((res) => {
+    if (!res.ok) {
+      throw new Error("Failed to fetch data");
+    }
+    return res.json();
+  });
 }
-
-// option 2
-// function getJSON(url) {
-//     return fetch(url).then(res => res.json());
-// }
 
 // test your code
 const urls = [
-  'https://api.github.com/search/repositories?q=javascript',
-  'https://api.github.com/search/repositories?q=react',
-  'https://api.github.com/search/repositories?q=nodejs'
+  "https://api.github.com/search/repositories?q=javascript",
+  "https://api.github.com/search/repositories?q=react",
+  "https://api.github.com/search/repositories?q=nodejs",
 ];
+
+sequencePromise(urls)
+  .then((results) => {
+    console.log("All results:", results);
+  })
+  .catch((err) => {
+    console.error("Error fetching:", err);
+  });

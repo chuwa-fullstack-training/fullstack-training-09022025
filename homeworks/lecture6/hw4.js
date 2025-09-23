@@ -6,4 +6,12 @@
  */
 function format(num) {
   // your code here
+  const [int, dec] = num.toString().split(".");
+  function insertCommas(str) {
+    if (str.length <= 3) return str;
+    return insertCommas(str.slice(0, -3)) + "," + str.slice(-3);
+  }
+  return dec ? insertCommas(int) + "." + dec : insertCommas(int);
+
+  // return num.toLocaleString("en-US"); using built-in methods
 }

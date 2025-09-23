@@ -8,13 +8,22 @@
  * const debouncedFn = debounce(printHello, 1000)
  * debouncedFn()
  * debouncedFn() // timer reset to 1s
- * 
+ *
  * @param {function} func
  * @param {number} delay
  * @returns {function}
  */
 function debounce(func, delay) {
   // your code here
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout); // Cancel the previous timer
+    //start a new one
+    timeout = setTimeout(() => {
+      func(...args); // Call the function after 1 sec
+      // func.apply(this, args); It preserves the correct this (if debounce is used inside an object or class)
+    }, delay);
+  };
 }
 
 /**
@@ -27,11 +36,20 @@ function debounce(func, delay) {
  * const throttledFn = throttle(printHello, 1000)
  * throttledFn()
  * throttledFn() // ignored
- * 
+ *
  * @param {function} func
  * @param {number} delay
  * @returns {function}
  */
 function throttle(func, delay) {
   // your code here
+  let isThrottled = false;
+  return (...args) => {
+    if (isThrottled) return;
+    func(...args);
+    isThrottled = true;
+    setTimeout(() => {
+      isThrottled = false;
+    }, delay);
+  };
 }
