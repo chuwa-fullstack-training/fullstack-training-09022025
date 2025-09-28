@@ -17,7 +17,7 @@
  *   ...
  *   }
  * ]}
- * 
+ *
  * result from https://hn.algolia.com/api/v1/search?query=banana&tags=story:
  * {
  *  "hits": [
@@ -27,7 +27,7 @@
  *   ...
  *   }
  * ]}
- * 
+ *
  * final result from http://localhost:3000/hw2?query1=apple&query2=banana:
  * {
  *   "apple":
@@ -42,3 +42,53 @@
  *  }
  * }
  */
+const express = require("express");
+const https = require("https");
+const app = express();
+const port = 3000;
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}!`);
+});
+app.get("/", (req, res) => {
+    res.send("This is the home page");
+});
+
+function requestJSON(url) {
+    return new Promise((resolve) => {
+        https.get(url, (res) => {
+            let data = "";
+            res.on("data", (chunk) => {
+                data += chunk;
+            });
+            res.on("end", () => {
+                resolve(JSON.parse(data));
+            });
+        });
+    });
+}
+
+app.get("/hw2/", (req, res) => {
+    if (req.query.query1 === undefined || req.query.query2 === undefined) {
+        return res.send("Wrong parameter provided");
+    }
+    const query1 = req.query.query1;
+    const query2 = req.query.query2;
+    let result = {};
+    result[query1] = {};
+    result[query2] = {};
+    Promise.all([
+        requestJSON(
+            `https://hn.algolia.com/api/v1/search?query=${query1}&tags=story`
+        ),
+        requestJSON(
+            `https://hn.algolia.com/api/v1/search?query=${query2}&tags=story`
+        ),
+    ]).then((results) => {
+        result[query1]["created_at"] = results[0]["hits"][0]["created_at"];
+        result[query1]["title"] = results[0]["hits"][0]["title"];
+        result[query2]["created_at"] = results[1]["hits"][0]["created_at"];
+        result[query2]["title"] = results[1]["hits"][0]["title"];
+        res.json(result);
+    });
+});
