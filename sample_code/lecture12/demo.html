@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Evolution: Todo App Through the Ages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .era-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .era-tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .era-tab:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .era-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .era-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .era-content.active {
+            display: block;
+        }
+
+        .era-header {
+            background: linear-gradient(45deg, #333, #555);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .era-header h2 {
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .era-description {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .demo-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 500px;
+        }
+
+        .code-panel {
+            background: #1a1a1a;
+            color: #f8f8f2;
+            padding: 20px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .demo-panel {
+            background: #f9f9f9;
+            padding: 20px;
+            border-left: 1px solid #eee;
+            overflow-y: auto;
+        }
+
+        .code-title {
+            color: #50fa7b;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .keyword { color: #ff79c6; }
+        .string { color: #f1fa8c; }
+        .function { color: #50fa7b; }
+        .comment { color: #6272a4; font-style: italic; }
+        .tag { color: #ff79c6; }
+        .attribute { color: #50fa7b; }
+
+        /* Todo App Styles */
+        .todo-app {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .todo-header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .todo-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .add-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .todo-list {
+            padding: 20px;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-item.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .pros {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .cons {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .pros h4, .cons h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .pros ul, .cons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .pros li::before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .cons li::before {
+            content: "✗ ";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .demo-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .code-panel {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Frontend Development Evolution</h1>
+        <p style="text-align: center; color: white; margin-bottom: 30px; font-size: 1.2rem;">
+            Building the same Todo App across different eras of web development
+        </p>
+
+        <div class="era-tabs">
+            <button class="era-tab active" data-era="html-css-js">1995-2005<br>HTML + CSS + JS</button>
+            <button class="era-tab" data-era="jquery">2006-2012<br>jQuery Era</button>
+            <button class="era-tab" data-era="backbone">2010-2013<br>Backbone.js</button>
+            <button class="era-tab" data-era="react">2013-Present<br>React Era</button>
+        </div>
+
+        <!-- HTML + CSS + JS Era (1995-2005) -->
+        <div class="era-content active" id="html-css-js">
+            <div class="era-header">
+                <h2>🌐 The Beginning: HTML + CSS + Vanilla JavaScript</h2>
+                <p class="era-description">
+                    The early web was simple but powerful. Direct DOM manipulation, inline event handlers, 
+                    and imperative programming were the norm. Every interaction required manual DOM updates.
+                </p>
+            </div>
+            <div class="demo-section">
+                <div class="code-panel">
+                    <div class="code-title">📄 HTML + CSS + Vanilla JavaScript (1995-2005)</div>
+                    <pre><code><span class="comment">// Early web development approach</span>
+<span class="tag">&lt;div</span> <span class="attribute">id=</span><span class="string">"todoApp"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>Todo List<span class="tag">&lt;/h3&gt;</span>
+  <span class="tag">&lt;input</span> <span class="attribute">type=</span><span class="string">"text"</span> <span class="attribute">id=</span><span class="string">"todoInput"</span> 
+         <span class="attribute">placeholder=</span><span class="string">"Enter task..."</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attribute">onclick=</span><span class="string">"addTodo()"</span><span class="tag">&gt;</span>Add<span class="tag">&lt;/button&gt;</span>
+  <span class="tag">&lt;ul</span> <span class="attribute">id=</span><span class="string">"todoList"</span><span class="tag">&gt;&lt;/ul&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="keyword">var</span> todos = [];
+<span class="keyword">var</span> todoCounter = <span class="string">0</span>;
+
+<span class="keyword">function</span> <span class="function">addTodo</span>() {
+  <span class="keyword">var</span> input = document.getElementById(<span class="string">'todoInput'</span>);
+  <span class="keyword">var</span> text = input.value.trim();
+  
+  <span class="keyword">if</span> (text === <span class="string">''</span>) <span class="keyword">return</span>;
+  
+  <span class="keyword">var</span> todo = {
+    id: ++todoCounter,
+    text: text,
+    completed: <span class="keyword">false</span>
+  };
+  
+  todos.push(todo);
+  input.value = <span class="string">''</span>;
+  renderTodos();
+}
+
+<span class="keyword">function</span> <span class="function">toggleTodo</span>(id) {
+  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="string">0</span>; i &lt; todos.length; i++) {
+    <span class="keyword">if</span> (todos[i].id === id) {
+      todos[i].completed = !todos[i].completed;
+      <span class="keyword">break</span>;
+    }
+  }
+  renderTodos();
+}
+
+<span class="keyword">function</span> <span class="function">deleteTodo</span>(id) {
+  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="string">0</span>; i &lt; todos.length; i++) {
+    <span class="keyword">if</span> (todos[i].id === id) {
+      todos.splice(i, <span class="string">1</span>);
+      <span class="keyword">break</span>;
+    }
+  }
+  renderTodos();
+}
+
+<span class="keyword">function</span> <span class="function">renderTodos</span>() {
+  <span class="keyword">var</span> list = document.getElementById(<span class="string">'todoList'</span>);
+  list.innerHTML = <span class="string">''</span>; <span class="comment">// Clear existing items</span>
+  
+  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="string">0</span>; i &lt; todos.length; i++) {
+    <span class="keyword">var</span> todo = todos[i];
+    <span class="keyword">var</span> li = document.createElement(<span class="string">'li'</span>);
+    li.className = todo.completed ? <span class="string">'completed'</span> : <span class="string">''</span>;
+    
+    li.innerHTML = 
+      <span class="string">'&lt;input type="checkbox" ' +</span>
+      <span class="string">'onchange="toggleTodo(' + todo.id + ')" ' +</span>
+      <span class="string">(todo.completed ? 'checked' : '') + '&gt;' +</span>
+      <span class="string">'&lt;span&gt;' + todo.text + '&lt;/span&gt;' +</span>
+      <span class="string">'&lt;button onclick="deleteTodo(' + todo.id + ')"&gt;Delete&lt;/button&gt;'</span>;
+    
+    list.appendChild(li);
+  }
+}
+<span class="tag">&lt;/script&gt;</span></code></pre>
+                </div>
+                <div class="demo-panel">
+                    <div class="todo-app">
+                        <div class="todo-header">
+                            <h3>Todo List (Vanilla JS)</h3>
+                        </div>
+                        <div class="todo-list">
+                            <input type="text" id="vanillaTodoInput" class="todo-input" placeholder="Enter task...">
+                            <button class="add-btn" onclick="addVanillaTodo()">Add Task</button>
+                            <div id="vanillaTodoList"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Pros</h4>
+                            <ul>
+                                <li>Simple and straightforward</li>
+                                <li>No external dependencies</li>
+                                <li>Fast loading</li>
+                                <li>Direct control over DOM</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Cons</h4>
+                            <ul>
+                                <li>Lots of boilerplate code</li>
+                                <li>Manual DOM manipulation</li>
+                                <li>Browser compatibility issues</li>
+                                <li>Mixing HTML and JavaScript</li>
+                                <li>Hard to maintain as it grows</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- jQuery Era (2006-2012) -->
+        <div class="era-content" id="jquery">
+            <div class="era-header">
+                <h2>💚 The jQuery Revolution</h2>
+                <p class="era-description">
+                    jQuery simplified DOM manipulation and AJAX calls. "Write less, do more" became the motto. 
+                    Cross-browser compatibility was finally manageable, and animations became easy.
+                </p>
+            </div>
+            <div class="demo-section">
+                <div class="code-panel">
+                    <div class="code-title">🟢 jQuery Era (2006-2012)</div>
+                    <pre><code><span class="comment">// jQuery made DOM manipulation elegant</span>
+<span class="tag">&lt;script</span> <span class="attribute">src=</span><span class="string">"https://code.jquery.com/jquery-1.12.4.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="tag">&lt;div</span> <span class="attribute">id=</span><span class="string">"jqueryTodoApp"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>Todo List<span class="tag">&lt;/h3&gt;</span>
+  <span class="tag">&lt;input</span> <span class="attribute">type=</span><span class="string">"text"</span> <span class="attribute">id=</span><span class="string">"jqueryTodoInput"</span> 
+         <span class="attribute">placeholder=</span><span class="string">"Enter task..."</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attribute">id=</span><span class="string">"addBtn"</span><span class="tag">&gt;</span>Add<span class="tag">&lt;/button&gt;</span>
+  <span class="tag">&lt;ul</span> <span class="attribute">id=</span><span class="string">"jqueryTodoList"</span><span class="tag">&gt;&lt;/ul&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+$(<span class="keyword">document</span>).ready(<span class="keyword">function</span>() {
+  <span class="keyword">var</span> todos = [];
+  <span class="keyword">var</span> todoCounter = <span class="string">0</span>;
+
+  <span class="comment">// Event delegation for dynamic elements</span>
+  $(<span class="string">'#addBtn'</span>).on(<span class="string">'click'</span>, addTodo);
+  $(<span class="string">'#jqueryTodoInput'</span>).on(<span class="string">'keypress'</span>, <span class="keyword">function</span>(e) {
+    <span class="keyword">if</span> (e.which === <span class="string">13</span>) addTodo();
+  });
+  
+  <span class="comment">// Event delegation for dynamic content</span>
+  $(<span class="string">'#jqueryTodoList'</span>).on(<span class="string">'change'</span>, <span class="string">'.todo-checkbox'</span>, <span class="keyword">function</span>() {
+    <span class="keyword">var</span> id = parseInt($(<span class="keyword">this</span>).data(<span class="string">'id'</span>));
+    toggleTodo(id);
+  });
+  
+  $(<span class="string">'#jqueryTodoList'</span>).on(<span class="string">'click'</span>, <span class="string">'.delete-btn'</span>, <span class="keyword">function</span>() {
+    <span class="keyword">var</span> id = parseInt($(<span class="keyword">this</span>).data(<span class="string">'id'</span>));
+    deleteTodo(id);
+  });
+
+  <span class="keyword">function</span> <span class="function">addTodo</span>() {
+    <span class="keyword">var</span> text = $(<span class="string">'#jqueryTodoInput'</span>).val().trim();
+    
+    <span class="keyword">if</span> (text === <span class="string">''</span>) <span class="keyword">return</span>;
+    
+    <span class="keyword">var</span> todo = {
+      id: ++todoCounter,
+      text: text,
+      completed: <span class="keyword">false</span>
+    };
+    
+    todos.push(todo);
+    $(<span class="string">'#jqueryTodoInput'</span>).val(<span class="string">''</span>);
+    renderTodos();
+  }
+
+  <span class="keyword">function</span> <span class="function">toggleTodo</span>(id) {
+    <span class="keyword">var</span> todo = $.grep(todos, <span class="keyword">function</span>(t) { 
+      <span class="keyword">return</span> t.id === id; 
+    })[<span class="string">0</span>];
+    
+    <span class="keyword">if</span> (todo) {
+      todo.completed = !todo.completed;
+      renderTodos();
+    }
+  }
+
+  <span class="keyword">function</span> <span class="function">deleteTodo</span>(id) {
+    todos = $.grep(todos, <span class="keyword">function</span>(t) { 
+      <span class="keyword">return</span> t.id !== id; 
+    });
+    renderTodos();
+  }
+
+  <span class="keyword">function</span> <span class="function">renderTodos</span>() {
+    <span class="keyword">var</span> $list = $(<span class="string">'#jqueryTodoList'</span>);
+    $list.empty(); <span class="comment">// jQuery's elegant DOM clearing</span>
+    
+    $.each(todos, <span class="keyword">function</span>(index, todo) {
+      <span class="keyword">var</span> $li = $(<span class="string">'&lt;li&gt;'</span>)
+        .addClass(<span class="string">'todo-item'</span>)
+        .toggleClass(<span class="string">'completed'</span>, todo.completed);
+      
+      <span class="keyword">var</span> $checkbox = $(<span class="string">'&lt;input&gt;'</span>)
+        .attr(<span class="string">'type'</span>, <span class="string">'checkbox'</span>)
+        .addClass(<span class="string">'todo-checkbox'</span>)
+        .data(<span class="string">'id'</span>, todo.id)
+        .prop(<span class="string">'checked'</span>, todo.completed);
+      
+      <span class="keyword">var</span> $text = $(<span class="string">'&lt;span&gt;'</span>).text(todo.text);
+      
+      <span class="keyword">var</span> $deleteBtn = $(<span class="string">'&lt;button&gt;'</span>)
+        .addClass(<span class="string">'delete-btn'</span>)
+        .data(<span class="string">'id'</span>, todo.id)
+        .text(<span class="string">'Delete'</span>);
+      
+      $li.append($checkbox, $text, $deleteBtn);
+      $list.append($li);
+      
+      <span class="comment">// jQuery animations</span>
+      $li.hide().fadeIn(<span class="string">300</span>);
+    });
+  }
+});
+<span class="tag">&lt;/script&gt;</span></code></pre>
+                </div>
+                <div class="demo-panel">
+                    <div class="todo-app">
+                        <div class="todo-header">
+                            <h3>Todo List (jQuery)</h3>
+                        </div>
+                        <div class="todo-list">
+                            <input type="text" id="jqueryTodoInput" class="todo-input" placeholder="Enter task...">
+                            <button class="add-btn" id="jqueryAddBtn">Add Task</button>
+                            <div id="jqueryTodoList"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Pros</h4>
+                            <ul>
+                                <li>Simplified DOM manipulation</li>
+                                <li>Cross-browser compatibility</li>
+                                <li>Elegant syntax</li>
+                                <li>Rich ecosystem of plugins</li>
+                                <li>Easy animations</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Cons</h4>
+                            <ul>
+                                <li>Still imperative programming</li>
+                                <li>Manual state management</li>
+                                <li>Performance issues with large DOM</li>
+                                <li>Callback hell for complex flows</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backbone.js Era (2010-2013) -->
+        <div class="era-content" id="backbone">
+            <div class="era-header">
+                <h2>🏗️ Structure Emerges: Backbone.js Era</h2>
+                <p class="era-description">
+                    The first attempt at structure. Models, Views, and Collections provided organization.
+                    MVC pattern brought separation of concerns, but still required lots of boilerplate.
+                </p>
+            </div>
+            <div class="demo-section">
+                <div class="code-panel">
+                    <div class="code-title">🔧 Backbone.js Era (2010-2013)</div>
+                    <pre><code><span class="comment">// Backbone.js brought structure to chaos</span>
+<span class="tag">&lt;script</span> <span class="attribute">src=</span><span class="string">"underscore.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;script</span> <span class="attribute">src=</span><span class="string">"backbone.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">// Model - represents a single todo item</span>
+<span class="keyword">var</span> <span class="function">Todo</span> = Backbone.Model.extend({
+  defaults: {
+    text: <span class="string">''</span>,
+    completed: <span class="keyword">false</span>
+  },
+  
+  toggle: <span class="keyword">function</span>() {
+    <span class="keyword">this</span>.set(<span class="string">'completed'</span>, !<span class="keyword">this</span>.get(<span class="string">'completed'</span>));
+  }
+});
+
+<span class="comment">// Collection - manages multiple todos</span>
+<span class="keyword">var</span> <span class="function">TodoCollection</span> = Backbone.Collection.extend({
+  model: Todo,
+  
+  completed: <span class="keyword">function</span>() {
+    <span class="keyword">return</span> <span class="keyword">this</span>.filter(<span class="keyword">function</span>(todo) {
+      <span class="keyword">return</span> todo.get(<span class="string">'completed'</span>);
+    });
+  },
+  
+  remaining: <span class="keyword">function</span>() {
+    <span class="keyword">return</span> <span class="keyword">this</span>.without.apply(<span class="keyword">this</span>, <span class="keyword">this</span>.completed());
+  }
+});
+
+<span class="comment">// View for individual todo items</span>
+<span class="keyword">var</span> <span class="function">TodoView</span> = Backbone.View.extend({
+  tagName: <span class="string">'li'</span>,
+  className: <span class="string">'todo-item'</span>,
+  
+  events: {
+    <span class="string">'change .todo-checkbox'</span>: <span class="string">'toggleCompleted'</span>,
+    <span class="string">'click .delete-btn'</span>: <span class="string">'deleteTodo'</span>
+  },
+  
+  initialize: <span class="keyword">function</span>() {
+    <span class="keyword">this</span>.listenTo(<span class="keyword">this</span>.model, <span class="string">'change'</span>, <span class="keyword">this</span>.render);
+    <span class="keyword">this</span>.listenTo(<span class="keyword">this</span>.model, <span class="string">'destroy'</span>, <span class="keyword">this</span>.remove);
+  },
+  
+  render: <span class="keyword">function</span>() {
+    <span class="keyword">var</span> completed = <span class="keyword">this</span>.model.get(<span class="string">'completed'</span>);
+    
+    <span class="keyword">this</span>.$el.html(
+      <span class="string">'&lt;input type="checkbox" class="todo-checkbox" ' + 
+      (completed ? 'checked' : '') + '&gt;' +
+      '&lt;span&gt;' + this.model.get('text') + '&lt;/span&gt;' +
+      '&lt;button class="delete-btn"&gt;Delete&lt;/button&gt;'</span>
+    );
+    
+    <span class="keyword">this</span>.$el.toggleClass(<span class="string">'completed'</span>, completed);
+    <span class="keyword">return</span> <span class="keyword">this</span>;
+  },
+  
+  toggleCompleted: <span class="keyword">function</span>() {
+    <span class="keyword">this</span>.model.toggle();
+  },
+  
+  deleteTodo: <span class="keyword">function</span>() {
+    <span class="keyword">this</span>.model.destroy();
+  }
+});
+
+<span class="comment">// Main application view</span>
+<span class="keyword">var</span> <span class="function">AppView</span> = Backbone.View.extend({
+  el: <span class="string">'#backboneTodoApp'</span>,
+  
+  events: {
+    <span class="string">'click #backboneAddBtn'</span>: <span class="string">'addTodo'</span>,
+    <span class="string">'keypress #backboneTodoInput'</span>: <span class="string">'addOnEnter'</span>
+  },
+  
+  initialize: <span class="keyword">function</span>() {
+    <span class="keyword">this</span>.todos = <span class="keyword">new</span> TodoCollection();
+    <span class="keyword">this</span>.listenTo(<span class="keyword">this</span>.todos, <span class="string">'add'</span>, <span class="keyword">this</span>.addOne);
+    <span class="keyword">this</span>.listenTo(<span class="keyword">this</span>.todos, <span class="string">'reset'</span>, <span class="keyword">this</span>.addAll);
+  },
+  
+  addTodo: <span class="keyword">function</span>() {
+    <span class="keyword">var</span> text = <span class="keyword">this</span>.$(<span class="string">'#backboneTodoInput'</span>).val().trim();
+    
+    <span class="keyword">if</span> (text === <span class="string">''</span>) <span class="keyword">return</span>;
+    
+    <span class="keyword">this</span>.todos.create({
+      text: text,
+      completed: <span class="keyword">false</span>
+    });
+    
+    <span class="keyword">this</span>.$(<span class="string">'#backboneTodoInput'</span>).val(<span class="string">''</span>);
+  },
+  
+  addOnEnter: <span class="keyword">function</span>(e) {
+    <span class="keyword">if</span> (e.which === <span class="string">13</span>) <span class="keyword">this</span>.addTodo();
+  },
+  
+  addOne: <span class="keyword">function</span>(todo) {
+    <span class="keyword">var</span> view = <span class="keyword">new</span> TodoView({ model: todo });
+    <span class="keyword">this</span>.$(<span class="string">'#backboneTodoList'</span>).append(view.render().el);
+  },
+  
+  addAll: <span class="keyword">function</span>() {
+    <span class="keyword">this</span>.todos.each(<span class="keyword">this</span>.addOne, <span class="keyword">this</span>);
+  }
+});
+
+<span class="comment">// Initialize the app</span>
+<span class="keyword">var</span> app = <span class="keyword">new</span> AppView();
+<span class="tag">&lt;/script&gt;</span></code></pre>
+                </div>
+                <div class="demo-panel">
+                    <div class="todo-app">
+                        <div class="todo-header">
+                            <h3>Todo List (Backbone.js)</h3>
+                        </div>
+                        <div class="todo-list">
+                            <input type="text" id="backboneTodoInput" class="todo-input" placeholder="Enter task...">
+                            <button class="add-btn" id="backboneAddBtn">Add Task</button>
+                            <div id="backboneTodoList"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Pros</h4>
+                            <ul>
+                                <li>Clear separation of concerns</li>
+                                <li>Event-driven architecture</li>
+                                <li>Model-View structure</li>
+                                <li>RESTful API integration</li>
+                                <li>Better code organization</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Cons</h4>
+                            <ul>
+                                <li>Lots of boilerplate code</li>
+                                <li>Manual view synchronization</li>
+                                <li>Memory leaks if not careful</li>
+                                <li>Complex for simple apps</li>
+                                <li>Still imperative DOM updates</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- React Era (2013-Present) -->
+        <div class="era-content" id="react">
+            <div class="era-header">
+                <h2>⚛️ The React Revolution: Component-Based Future</h2>
+                <p class="era-description">
+                    React changed everything with components, virtual DOM, and declarative programming. 
+                    "Just describe what the UI should look like" became the new paradigm.
+                </p>
+            </div>
+            <div class="demo-section">
+                <div class="code-panel">
+                    <div class="code-title">⚛️ React Era (2013-Present)</div>
+                    <pre><code><span class="comment">// React: Declarative, Component-Based</span>
+<span class="tag">&lt;script</span> <span class="attribute">src=</span><span class="string">"https://unpkg.com/react@18/umd/react.development.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;script</span> <span class="attribute">src=</span><span class="string">"https://unpkg.com/react-dom@18/umd/react-dom.development.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;script</span> <span class="attribute">src=</span><span class="string">"https://unpkg.com/@babel/standalone/babel.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="tag">&lt;div</span> <span class="attribute">id=</span><span class="string">"reactTodoApp"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="tag">&lt;script</span> <span class="attribute">type=</span><span class="string">"text/babel"</span><span class="tag">&gt;</span>
+<span class="comment">// Individual Todo Item Component</span>
+<span class="keyword">const</span> <span class="function">TodoItem</span> = ({ todo, onToggle, onDelete }) =&gt; {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;li</span> <span class="attribute">className=</span>{`todo-item ${todo.completed ? <span class="string">'completed'</span> : <span class="string">''</span>}`}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="attribute">type=</span><span class="string">"checkbox"</span>
+        <span class="attribute">checked=</span>{todo.completed}
+        <span class="attribute">onChange=</span>{() =&gt; onToggle(todo.id)}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;span&gt;</span>{todo.text}<span class="tag">&lt;/span&gt;</span>
+      <span class="tag">&lt;button</span>
+        <span class="attribute">className=</span><span class="string">"delete-btn"</span>
+        <span class="attribute">onClick=</span>{() =&gt; onDelete(todo.id)}
+      <span class="tag">&gt;</span>
+        Delete
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/li&gt;</span>
+  );
+};
+
+<span class="comment">// Main Todo App Component</span>
+<span class="keyword">const</span> <span class="function">TodoApp</span> = () =&gt; {
+  <span class="comment">// State management with hooks</span>
+  <span class="keyword">const</span> [todos, setTodos] = React.useState([]);
+  <span class="keyword">const</span> [inputValue, setInputValue] = React.useState(<span class="string">''</span>);
+  <span class="keyword">const</span> [nextId, setNextId] = React.useState(<span class="string">1</span>);
+
+  <span class="comment">// Add new todo</span>
+  <span class="keyword">const</span> <span class="function">addTodo</span> = () =&gt; {
+    <span class="keyword">if</span> (inputValue.trim() === <span class="string">''</span>) <span class="keyword">return</span>;
+    
+    <span class="keyword">const</span> newTodo = {
+      id: nextId,
+      text: inputValue.trim(),
+      completed: <span class="keyword">false</span>
+    };
+    
+    setTodos(prevTodos =&gt; [...prevTodos, newTodo]);
+    setNextId(prev =&gt; prev + <span class="string">1</span>);
+    setInputValue(<span class="string">''</span>);
+  };
+
+  <span class="comment">// Toggle todo completion</span>
+  <span class="keyword">const</span> <span class="function">toggleTodo</span> = (id) =&gt; {
+    setTodos(prevTodos =&gt;
+      prevTodos.map(todo =&gt;
+        todo.id === id 
+          ? { ...todo, completed: !todo.completed }
+          : todo
+      )
+    );
+  };
+
+  <span class="comment">// Delete todo</span>
+  <span class="keyword">const</span> <span class="function">deleteTodo</span> = (id) =&gt; {
+    setTodos(prevTodos =&gt; 
+      prevTodos.filter(todo =&gt; todo.id !== id)
+    );
+  };
+
+  <span class="comment">// Handle Enter key</span>
+  <span class="keyword">const</span> <span class="function">handleKeyPress</span> = (e) =&gt; {
+    <span class="keyword">if</span> (e.key === <span class="string">'Enter'</span>) {
+      addTodo();
+    }
+  };
+
+  <span class="comment">// Render component</span>
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div</span> <span class="attribute">className=</span><span class="string">"todo-app"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attribute">className=</span><span class="string">"todo-header"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h3&gt;</span>Todo List (React)<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      
+      <span class="tag">&lt;div</span> <span class="attribute">className=</span><span class="string">"todo-list"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;input</span>
+          <span class="attribute">type=</span><span class="string">"text"</span>
+          <span class="attribute">className=</span><span class="string">"todo-input"</span>
+          <span class="attribute">placeholder=</span><span class="string">"Enter task..."</span>
+          <span class="attribute">value=</span>{inputValue}
+          <span class="attribute">onChange=</span>{(e) =&gt; setInputValue(e.target.value)}
+          <span class="attribute">onKeyPress=</span>{handleKeyPress}
+        <span class="tag">/&gt;</span>
+        
+        <span class="tag">&lt;button</span> <span class="attribute">className=</span><span class="string">"add-btn"</span> <span class="attribute">onClick=</span>{addTodo}<span class="tag">&gt;</span>
+          Add Task
+        <span class="tag">&lt;/button&gt;</span>
+        
+        <span class="tag">&lt;ul&gt;</span>
+          {todos.map(todo =&gt; (
+            <span class="tag">&lt;TodoItem</span>
+              <span class="attribute">key=</span>{todo.id}
+              <span class="attribute">todo=</span>{todo}
+              <span class="attribute">onToggle=</span>{toggleTodo}
+              <span class="attribute">onDelete=</span>{deleteTodo}
+            <span class="tag">/&gt;</span>
+          ))}
+        <span class="tag">&lt;/ul&gt;</span>
+        
+        {todos.length === <span class="string">0</span> && (
+          <span class="tag">&lt;p</span> <span class="attribute">style=</span>{{textAlign: <span class="string">'center'</span>, color: <span class="string">'#888'</span>, marginTop: <span class="string">'20px'</span>}}<span class="tag">&gt;</span>
+            No tasks yet. Add one above!
+          <span class="tag">&lt;/p&gt;</span>
+        )}
+        
+        {todos.length &gt; <span class="string">0</span> && (
+          <span class="tag">&lt;p</span> <span class="attribute">style=</span>{{textAlign: <span class="string">'center'</span>, color: <span class="string">'#666'</span>, marginTop: <span class="string">'10px'</span>}}<span class="tag">&gt;</span>
+            {todos.filter(t =&gt; !t.completed).length} of {todos.length} tasks remaining
+          <span class="tag">&lt;/p&gt;</span>
+        )}
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+};
+
+<span class="comment">// Render the app</span>
+ReactDOM.render(<span class="tag">&lt;TodoApp</span> <span class="tag">/&gt;</span>, document.getElementById(<span class="string">'reactTodoApp'</span>));
+<span class="tag">&lt;/script&gt;</span></code></pre>
+                </div>
+                <div class="demo-panel">
+                    <div id="reactDemo"></div>
+                    
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Pros</h4>
+                            <ul>
+                                <li>Declarative programming</li>
+                                <li>Component reusability</li>
+                                <li>Virtual DOM performance</li>
+                                <li>Excellent developer tools</li>
+                                <li>Huge ecosystem</li>
+                                <li>Easy to test</li>
+                                <li>Predictable state management</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Cons</h4>
+                            <ul>
+                                <li>Learning curve</li>
+                                <li>Build tools complexity</li>
+                                <li>Rapid ecosystem changes</li>
+                                <li>JSX syntax</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Era switching functionality
+        const tabs = document.querySelectorAll('.era-tab');
+        const contents = document.querySelectorAll('.era-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const era = tab.dataset.era;
+                document.getElementById(era).classList.add('active');
+            });
+        });
+
+        // Vanilla JavaScript Todo App
+        let vanillaTodos = [];
+        let vanillaTodoCounter = 0;
+
+        function addVanillaTodo() {
+            const input = document.getElementById('vanillaTodoInput');
+            const text = input.value.trim();
+            
+            if (text === '') return;
+            
+            const todo = {
+                id: ++vanillaTodoCounter,
+                text: text,
+                completed: false
+            };
+            
+            vanillaTodos.push(todo);
+            input.value = '';
+            renderVanillaTodos();
+        }
+
+        function toggleVanillaTodo(id) {
+            const todo = vanillaTodos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                renderVanillaTodos();
+            }
+        }
+
+        function deleteVanillaTodo(id) {
+            vanillaTodos = vanillaTodos.filter(t => t.id !== id);
+            renderVanillaTodos();
+        }
+
+        function renderVanillaTodos() {
+            const list = document.getElementById('vanillaTodoList');
+            list.innerHTML = '';
+            
+            vanillaTodos.forEach(todo => {
+                const div = document.createElement('div');
+                div.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''} 
+                           onchange="toggleVanillaTodo(${todo.id})">
+                    <span>${todo.text}</span>
+                    <button class="delete-btn" onclick="deleteVanillaTodo(${todo.id})">Delete</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Handle Enter key for vanilla todo
+        document.getElementById('vanillaTodoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addVanillaTodo();
+            }
+        });
+
+        // jQuery Todo App (simplified for demo)
+        let jqueryTodos = [];
+        let jqueryTodoCounter = 0;
+
+        document.getElementById('jqueryAddBtn').addEventListener('click', function() {
+            const input = document.getElementById('jqueryTodoInput');
+            const text = input.value.trim();
+            
+            if (text === '') return;
+            
+            const todo = {
+                id: ++jqueryTodoCounter,
+                text: text,
+                completed: false
+            };
+            
+            jqueryTodos.push(todo);
+            input.value = '';
+            renderJqueryTodos();
+        });
+
+        function toggleJqueryTodo(id) {
+            const todo = jqueryTodos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                renderJqueryTodos();
+            }
+        }
+
+        function deleteJqueryTodo(id) {
+            jqueryTodos = jqueryTodos.filter(t => t.id !== id);
+            renderJqueryTodos();
+        }
+
+        function renderJqueryTodos() {
+            const list = document.getElementById('jqueryTodoList');
+            list.innerHTML = '';
+            
+            jqueryTodos.forEach(todo => {
+                const div = document.createElement('div');
+                div.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''} 
+                           onchange="toggleJqueryTodo(${todo.id})">
+                    <span>${todo.text}</span>
+                    <button class="delete-btn" onclick="deleteJqueryTodo(${todo.id})">Delete</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Handle Enter key for jQuery todo
+        document.getElementById('jqueryTodoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('jqueryAddBtn').click();
+            }
+        });
+
+        // React Todo App
+        const { useState } = React;
+
+        const TodoItem = ({ todo, onToggle, onDelete }) => {
+            return React.createElement('div', { 
+                className: `todo-item ${todo.completed ? 'completed' : ''}` 
+            }, [
+                React.createElement('input', {
+                    type: 'checkbox',
+                    checked: todo.completed,
+                    onChange: () => onToggle(todo.id),
+                    key: 'checkbox'
+                }),
+                React.createElement('span', { key: 'text' }, todo.text),
+                React.createElement('button', {
+                    className: 'delete-btn',
+                    onClick: () => onDelete(todo.id),
+                    key: 'delete'
+                }, 'Delete')
+            ]);
+        };
+
+        const TodoApp = () => {
+            const [todos, setTodos] = useState([]);
+            const [inputValue, setInputValue] = useState('');
+            const [nextId, setNextId] = useState(1);
+
+            const addTodo = () => {
+                if (inputValue.trim() === '') return;
+                
+                const newTodo = {
+                    id: nextId,
+                    text: inputValue.trim(),
+                    completed: false
+                };
+                
+                setTodos(prevTodos => [...prevTodos, newTodo]);
+                setNextId(prev => prev + 1);
+                setInputValue('');
+            };
+
+            const toggleTodo = (id) => {
+                setTodos(prevTodos =>
+                    prevTodos.map(todo =>
+                        todo.id === id 
+                            ? { ...todo, completed: !todo.completed }
+                            : todo
+                    )
+                );
+            };
+
+            const deleteTodo = (id) => {
+                setTodos(prevTodos => 
+                    prevTodos.filter(todo => todo.id !== id)
+                );
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter') {
+                    addTodo();
+                }
+            };
+
+            return React.createElement('div', { className: 'todo-app' }, [
+                React.createElement('div', { className: 'todo-header', key: 'header' }, 
+                    React.createElement('h3', null, 'Todo List (React)')
+                ),
+                React.createElement('div', { className: 'todo-list', key: 'content' }, [
+                    React.createElement('input', {
+                        type: 'text',
+                        className: 'todo-input',
+                        placeholder: 'Enter task...',
+                        value: inputValue,
+                        onChange: (e) => setInputValue(e.target.value),
+                        onKeyPress: handleKeyPress,
+                        key: 'input'
+                    }),
+                    React.createElement('button', {
+                        className: 'add-btn',
+                        onClick: addTodo,
+                        key: 'button'
+                    }, 'Add Task'),
+                    React.createElement('div', { key: 'list' }, 
+                        todos.map(todo => 
+                            React.createElement(TodoItem, {
+                                key: todo.id,
+                                todo: todo,
+                                onToggle: toggleTodo,
+                                onDelete: deleteTodo
+                            })
+                        )
+                    ),
+                    todos.length === 0 && React.createElement('p', {
+                        style: { textAlign: 'center', color: '#888', marginTop: '20px' },
+                        key: 'empty'
+                    }, 'No tasks yet. Add one above!'),
+                    todos.length > 0 && React.createElement('p', {
+                        style: { textAlign: 'center', color: '#666', marginTop: '10px' },
+                        key: 'count'
+                    }, `${todos.filter(t => !t.completed).length} of ${todos.length} tasks remaining`)
+                ])
+            ]);
+        };
+
+        // Render React app
+        ReactDOM.render(React.createElement(TodoApp), document.getElementById('reactDemo'));
+    </script>
+
+    <!-- React and ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+</body>
+</html>
