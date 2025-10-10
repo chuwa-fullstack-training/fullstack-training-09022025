@@ -1,0 +1,202 @@
+# ========================================
+# 01: Basic Queries
+# ========================================
+# GraphQL queries are used to READ data
+# Think of them as GET requests in REST
+
+# ----------------------------
+# Example 1: Get all users
+# ----------------------------
+query GetAllUsers {
+  users {
+    id
+    username
+    email
+  }
+}
+
+# ----------------------------
+# Example 2: Get specific user by ID
+# ----------------------------
+query GetUserById {
+  user(id: "1") {
+    id
+    username
+    email
+    createdAt
+  }
+}
+
+# ----------------------------
+# Example 3: Nested queries (get user with their posts)
+# This is where GraphQL shines! No overfetching or underfetching
+# ----------------------------
+query GetUserWithPosts {
+  user(id: "1") {
+    id
+    username
+    email
+    posts {
+      id
+      title
+      status
+      createdAt
+    }
+  }
+}
+
+# ----------------------------
+# Example 4: Multiple queries in one request
+# You can fetch different resources in a single request!
+# ----------------------------
+query GetMultipleResources {
+  users(limit: 2) {
+    id
+    username
+  }
+
+  posts(first: 3) {
+    edges {
+      node {
+        id
+        title
+      }
+    }
+  }
+
+  stats {
+    totalUsers
+    totalPosts
+    totalComments
+  }
+}
+
+# ----------------------------
+# Example 5: Query with pagination
+# ----------------------------
+query GetUsersWithPagination {
+  users(limit: 5, offset: 0) {
+    id
+    username
+    email
+  }
+}
+
+# ----------------------------
+# Example 6: Field selection (ask for exactly what you need)
+# Unlike REST where you get the whole object,
+# GraphQL lets you pick specific fields
+# ----------------------------
+query GetOnlyUsernames {
+  users {
+    username
+    # Notice: no id, no email - just username!
+  }
+}
+
+# ----------------------------
+# Example 7: Deep nesting
+# Fetch user → their posts → comments on those posts
+# ----------------------------
+query GetUserWithPostsAndComments {
+  user(id: "1") {
+    username
+    posts {
+      title
+      comments {
+        text
+        author {
+          username
+        }
+      }
+    }
+  }
+}
+
+# ----------------------------
+# Example 8: Query with filtering
+# ----------------------------
+query GetPublishedPosts {
+  posts(first: 10, status: PUBLISHED) {
+    edges {
+      node {
+        id
+        title
+        status
+        author {
+          username
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# ----------------------------
+# Example 9: Search across multiple types
+# Returns a union of User | Post | Comment
+# ----------------------------
+query SearchEverything {
+  search(query: "graphql") {
+    __typename  # This tells us what type was returned
+
+    ... on User {
+      id
+      username
+      email
+    }
+
+    ... on Post {
+      id
+      title
+      content
+    }
+
+    ... on Comment {
+      id
+      text
+    }
+  }
+}
+
+# ----------------------------
+# Example 10: Query with cursor-based pagination
+# (Relay-style pagination)
+# ----------------------------
+query GetPostsWithCursorPagination($first: Int!, $after: String) {
+  posts(first: $first, after: $after) {
+    edges {
+      cursor
+      node {
+        id
+        title
+        author {
+          username
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# Variables for above query:
+# {
+#   "first": 5,
+#   "after": null
+# }
+
+# Then for next page:
+# {
+#   "first": 5,
+#   "after": "endCursorFromPreviousQuery"
+# }

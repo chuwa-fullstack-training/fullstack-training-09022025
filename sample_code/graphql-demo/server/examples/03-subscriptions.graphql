@@ -1,0 +1,180 @@
+# ========================================
+# 03: Subscriptions
+# ========================================
+# Subscriptions are for REAL-TIME updates via WebSocket
+# The server pushes data to the client when events occur
+
+# ----------------------------
+# Example 1: Subscribe to new posts
+# This will receive a message every time a new post is created
+# ----------------------------
+subscription OnNewPost {
+  postCreated {
+    id
+    title
+    content
+    author {
+      username
+      avatar
+    }
+    createdAt
+  }
+}
+
+# To test:
+# 1. Open this subscription in one tab
+# 2. In another tab, run the createPost mutation
+# 3. You'll see the new post appear in the subscription tab!
+
+# ----------------------------
+# Example 2: Subscribe to post updates
+# Watch for updates to a specific post
+# ----------------------------
+subscription WatchPostUpdates($postId: ID!) {
+  postUpdated(id: $postId) {
+    id
+    title
+    content
+    status
+    updatedAt
+  }
+}
+
+# Variables:
+# {
+#   "postId": "1"
+# }
+
+# ----------------------------
+# Example 3: Subscribe to new comments on a post
+# Real-time comment feed for a specific post
+# ----------------------------
+subscription OnNewComment($postId: ID!) {
+  commentAdded(postId: $postId) {
+    id
+    text
+    author {
+      username
+      avatar
+    }
+    createdAt
+  }
+}
+
+# Variables:
+# {
+#   "postId": "1"
+# }
+
+# ----------------------------
+# Example 4: Subscribe to new users
+# Get notified when new users register
+# ----------------------------
+subscription OnUserJoined {
+  userJoined {
+    id
+    username
+    email
+    createdAt
+  }
+}
+
+# ========================================
+# How Subscriptions Work
+# ========================================
+#
+# 1. Client establishes WebSocket connection
+#    ws://localhost:4000/graphql
+#
+# 2. Client sends subscription query
+#    The connection stays open
+#
+# 3. Server pushes data when events occur
+#    - New post created → postCreated fires
+#    - Comment added → commentAdded fires
+#    - etc.
+#
+# 4. Client receives real-time updates
+#    No polling needed!
+
+# ========================================
+# Testing Subscriptions
+# ========================================
+#
+# Option 1: Apollo Studio (built-in)
+# - Open http://localhost:4000/graphql
+# - Go to "Subscriptions" tab
+# - Run a subscription query
+# - In another tab, trigger the event (mutation)
+#
+# Option 2: With Apollo Client (React)
+# - Use useSubscription hook
+# - Example in client/src/components/PostSubscription.tsx
+#
+# Option 3: Command line with websocat
+# - npm install -g websocat
+# - websocat ws://localhost:4000/graphql
+
+# ========================================
+# Common Use Cases
+# ========================================
+#
+# 1. Chat applications
+#    subscription OnNewMessage($chatId: ID!) {
+#      messageReceived(chatId: $chatId) {
+#        id
+#        text
+#        sender { username }
+#      }
+#    }
+#
+# 2. Live notifications
+#    subscription OnNotification {
+#      notificationReceived {
+#        id
+#        message
+#        type
+#      }
+#    }
+#
+# 3. Live dashboards
+#    subscription OnStatsUpdate {
+#      statsUpdated {
+#        totalUsers
+#        activeUsers
+#        revenue
+#      }
+#    }
+#
+# 4. Collaborative editing
+#    subscription OnDocumentChange($docId: ID!) {
+#      documentUpdated(docId: $docId) {
+#        id
+#        content
+#        updatedBy { username }
+#      }
+#    }
+
+# ========================================
+# Best Practices
+# ========================================
+#
+# 1. Subscription Filtering
+#    - Use arguments to filter events (like postId above)
+#    - Don't send unnecessary updates to clients
+#
+# 2. Authentication
+#    - Check authentication in subscription resolver
+#    - Use connection params for auth token
+#
+# 3. Rate Limiting
+#    - Limit subscription frequency
+#    - Prevent abuse with throttling
+#
+# 4. Error Handling
+#    - Handle connection errors gracefully
+#    - Implement reconnection logic in client
+#
+# 5. Unsubscribe
+#    - Clean up subscriptions when component unmounts
+#    - Prevent memory leaks

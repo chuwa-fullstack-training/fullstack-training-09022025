@@ -1,0 +1,15 @@
+{
+  "name": "graphql-demo",
+  "version": "1.0.0",
+  "description": "Comprehensive GraphQL demonstration covering core concepts and best practices.",
+  "scripts": {
+    "dev": "concurrently \"npm --prefix client run dev\" \"npm --prefix server run dev\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

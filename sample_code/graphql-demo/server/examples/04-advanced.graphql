@@ -1,0 +1,435 @@
+# ========================================
+# 04: Advanced GraphQL Concepts
+# ========================================
+
+# ----------------------------
+# FRAGMENTS: Reusable field sets
+# ----------------------------
+
+# Define a fragment
+fragment UserFields on User {
+  id
+  username
+  email
+  createdAt
+}
+
+fragment PostFields on Post {
+  id
+  title
+  content
+  status
+  tags
+  createdAt
+}
+
+# Use fragments in queries
+query GetUserWithFragment {
+  user(id: "1") {
+    ...UserFields  # Spreads the UserFields fragment
+    posts {
+      ...PostFields
+    }
+  }
+}
+
+# You can also use inline fragments (without defining them first)
+query GetUserInline {
+  user(id: "1") {
+    ... {
+      id
+      username
+    }
+  }
+}
+
+# ----------------------------
+# DIRECTIVES: Dynamic query modification
+# ----------------------------
+
+# @include(if: Boolean) - Include field conditionally
+query GetUserConditional($includePosts: Boolean!) {
+  user(id: "1") {
+    id
+    username
+    posts @include(if: $includePosts) {
+      id
+      title
+    }
+  }
+}
+
+# Variables:
+# {
+#   "includePosts": true  // Set to false to exclude posts
+# }
+
+# @skip(if: Boolean) - Skip field conditionally (opposite of @include)
+query GetUserSkip($skipEmail: Boolean!) {
+  user(id: "1") {
+    id
+    username
+    email @skip(if: $skipEmail)
+  }
+}
+
+# Variables:
+# {
+#   "skipEmail": false  // Set to true to skip email
+# }
+
+# Combine multiple directives
+query FlexibleUserQuery(
+  $includePosts: Boolean!
+  $skipEmail: Boolean!
+) {
+  user(id: "1") {
+    id
+    username
+    email @skip(if: $skipEmail)
+    posts @include(if: $includePosts) {
+      id
+      title
+    }
+  }
+}
+
+# ----------------------------
+# ALIASES: Query same field with different arguments
+# ----------------------------
+query GetMultipleUsers {
+  # Without aliases, you can't query 'user' multiple times
+  # With aliases, you can!
+
+  alice: user(id: "1") {
+    username
+    email
+  }
+
+  bob: user(id: "2") {
+    username
+    email
+  }
+
+  charlie: user(id: "3") {
+    username
+    email
+  }
+}
+
+# Practical example: Get posts in different states
+query GetPostsByStatus {
+  publishedPosts: posts(status: PUBLISHED, first: 10) {
+    edges {
+      node {
+        id
+        title
+      }
+    }
+  }
+
+  draftPosts: posts(status: DRAFT, first: 10) {
+    edges {
+      node {
+        id
+        title
+      }
+    }
+  }
+}
+
+# ----------------------------
+# INTERFACES: Query across types that share fields
+# ----------------------------
+
+# All types implementing Node interface have id, createdAt, updatedAt
+query GetNodeById {
+  # This would work if we had a 'node' query that returns Node interface
+  # node(id: "1") {
+  #   id
+  #   createdAt
+  #
+  #   ... on User {
+  #     username
+  #   }
+  #
+  #   ... on Post {
+  #     title
+  #   }
+  # }
+
+  # For now, let's show how to use interface fields
+  search(query: "graphql") {
+    ... on User {
+      id
+      username
+      createdAt  # From Node interface
+    }
+    ... on Post {
+      id
+      title
+      createdAt  # From Node interface
+    }
+  }
+}
+
+# ----------------------------
+# UNION TYPES: Handle multiple possible return types
+# ----------------------------
+
+# Our AuthResult is a union of AuthSuccess | AuthError
+mutation HandleAuthResult {
+  login(username: "alice", password: "password123") {
+    ... on AuthSuccess {
+      __typename  # Will be "AuthSuccess"
+      token
+      user {
+        username
+      }
+    }
+
+    ... on AuthError {
+      __typename  # Will be "AuthError"
+      message
+      code
+    }
+  }
+}
+
+# Search returns User | Post | Comment
+query HandleSearchResults {
+  search(query: "graphql") {
+    __typename  # Tells us which type it is
+
+    # Use inline fragments for each possible type
+    ... on User {
+      id
+      username
+      email
+    }
+
+    ... on Post {
+      id
+      title
+      content
+      author {
+        username
+      }
+    }
+
+    ... on Comment {
+      id
+      text
+      author {
+        username
+      }
+    }
+  }
+}
+
+# ----------------------------
+# VARIABLES: Make queries reusable
+# ----------------------------
+
+# Without variables (hardcoded)
+query GetUserHardcoded {
+  user(id: "1") {
+    username
+  }
+}
+
+# With variables (reusable)
+query GetUserWithVariable($userId: ID!) {
+  user(id: $userId) {
+    username
+  }
+}
+
+# Variables:
+# {
+#   "userId": "1"
+# }
+
+# Default values
+query GetUsersWithDefaults(
+  $limit: Int = 10
+  $offset: Int = 0
+) {
+  users(limit: $limit, offset: $offset) {
+    id
+    username
+  }
+}
+
+# You can omit variables with defaults:
+# {}
+
+# Or override them:
+# {
+#   "limit": 5,
+#   "offset": 10
+# }
+
+# ----------------------------
+# OPERATION NAMES: Good practice for debugging
+# ----------------------------
+
+# Bad: Anonymous query
+query {
+  users {
+    username
+  }
+}
+
+# Good: Named query
+query GetAllUsers {
+  users {
+    username
+  }
+}
+
+# Benefits:
+# 1. Easier to identify in logs
+# 2. Better debugging
+# 3. Better error messages
+# 4. Can have multiple operations in one document
+
+# ----------------------------
+# BATCHING: Request multiple things at once
+# ----------------------------
+query GetDashboardData(
+  $userId: ID!
+  $postsFirst: Int!
+) {
+  # Get current user
+  me {
+    ...UserFields
+  }
+
+  # Get specific user
+  user(id: $userId) {
+    ...UserFields
+    posts {
+      id
+      title
+    }
+  }
+
+  # Get recent posts
+  recentPosts: posts(first: $postsFirst, status: PUBLISHED) {
+    edges {
+      node {
+        ...PostFields
+        author {
+          username
+        }
+      }
+    }
+  }
+
+  # Get statistics
+  stats {
+    totalUsers
+    totalPosts
+    totalComments
+  }
+}
+
+# ----------------------------
+# COMPLEX NESTED QUERIES
+# ----------------------------
+query GetCompleteUserProfile($userId: ID!) {
+  user(id: $userId) {
+    # Basic info
+    id
+    username
+    email
+    role
+    profile {
+      bio
+      avatar
+      website
+    }
+
+    # User's posts with comments and authors
+    posts {
+      id
+      title
+      content
+      status
+      tags
+      viewCount
+
+      # Comments on each post
+      comments {
+        id
+        text
+        createdAt
+
+        # Author of each comment
+        author {
+          id
+          username
+          avatar
+        }
+      }
+    }
+
+    # User's own comments on other posts
+    comments {
+      id
+      text
+      createdAt
+
+      # The post they commented on
+      post {
+        id
+        title
+        author {
+          username
+        }
+      }
+    }
+  }
+}
+
+# ----------------------------
+# PAGINATION PATTERNS
+# ----------------------------
+
+# Offset-based (simpler)
+query OffsetPagination($page: Int!) {
+  users(
+    limit: 10
+    offset: $page  # Page 0: offset 0, Page 1: offset 10, etc.
+  ) {
+    id
+    username
+  }
+}
+
+# Cursor-based (Relay-style, better for large datasets)
+query CursorPagination($first: Int!, $after: String) {
+  posts(first: $first, after: $after) {
+    edges {
+      cursor  # Opaque cursor string
+      node {
+        id
+        title
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# First page:
+# { "first": 10, "after": null }
+
+# Next page:
+# { "first": 10, "after": "<endCursor from previous>" }

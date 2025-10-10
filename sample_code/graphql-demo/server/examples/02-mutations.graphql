@@ -1,0 +1,286 @@
+# ========================================
+# 02: Mutations
+# ========================================
+# Mutations are used to CREATE, UPDATE, or DELETE data
+# Think of them as POST, PUT, PATCH, DELETE in REST
+
+# ----------------------------
+# Example 1: Register a new user
+# Demonstrates input types and union return types
+# ----------------------------
+mutation RegisterUser {
+  register(input: {
+    username: "newuser"
+    email: "newuser@example.com"
+    password: "password123"
+  }) {
+    # Union type - can be AuthSuccess or AuthError
+    ... on AuthSuccess {
+      token
+      user {
+        id
+        username
+        email
+      }
+    }
+
+    ... on AuthError {
+      message
+      code
+    }
+  }
+}
+
+# ----------------------------
+# Example 2: Register with variables (recommended approach)
+# Variables make queries reusable and prevent injection attacks
+# ----------------------------
+mutation RegisterUserWithVariables($input: CreateUserInput!) {
+  register(input: $input) {
+    ... on AuthSuccess {
+      token
+      user {
+        id
+        username
+        email
+      }
+    }
+    ... on AuthError {
+      message
+      code
+    }
+  }
+}
+
+# Variables:
+# {
+#   "input": {
+#     "username": "testuser",
+#     "email": "test@example.com",
+#     "password": "securepassword"
+#   }
+# }
+
+# ----------------------------
+# Example 3: Login
+# ----------------------------
+mutation Login($username: String!, $password: String!) {
+  login(username: $username, password: $password) {
+    ... on AuthSuccess {
+      token
+      user {
+        id
+        username
+        role
+      }
+    }
+    ... on AuthError {
+      message
+      code
+    }
+  }
+}
+
+# Variables:
+# {
+#   "username": "alice",
+#   "password": "password123"
+# }
+
+# ----------------------------
+# Example 4: Create a post (requires authentication)
+# You'll need to add Authorization header: Bearer <token>
+# ----------------------------
+mutation CreatePost($input: CreatePostInput!) {
+  createPost(input: $input) {
+    id
+    title
+    content
+    status
+    author {
+      username
+    }
+    createdAt
+  }
+}
+
+# Variables:
+# {
+#   "input": {
+#     "title": "My First GraphQL Post",
+#     "content": "This is an amazing post about GraphQL!",
+#     "tags": ["graphql", "tutorial"],
+#     "status": "DRAFT"
+#   }
+# }
+
+# HTTP Headers:
+# {
+#   "Authorization": "Bearer YOUR_TOKEN_HERE"
+# }
+
+# ----------------------------
+# Example 5: Update a post
+# Demonstrates partial updates (only provided fields are updated)
+# ----------------------------
+mutation UpdatePost($id: ID!, $input: UpdatePostInput!) {
+  updatePost(id: $id, input: $input) {
+    id
+    title
+    content
+    status
+    updatedAt
+  }
+}
+
+# Variables:
+# {
+#   "id": "1",
+#   "input": {
+#     "title": "Updated Title",
+#     "status": "PUBLISHED"
+#   }
+# }
+
+# ----------------------------
+# Example 6: Publish a post (state transition)
+# ----------------------------
+mutation PublishPost($id: ID!) {
+  publishPost(id: $id) {
+    id
+    title
+    status
+    updatedAt
+  }
+}
+
+# Variables:
+# {
+#   "id": "3"
+# }
+
+# ----------------------------
+# Example 7: Create a comment
+# ----------------------------
+mutation CreateComment($input: CreateCommentInput!) {
+  createComment(input: $input) {
+    id
+    text
+    author {
+      username
+      avatar
+    }
+    post {
+      id
+      title
+    }
+    createdAt
+  }
+}
+
+# Variables:
+# {
+#   "input": {
+#     "text": "Great article! Thanks for sharing.",
+#     "postId": "1"
+#   }
+# }
+
+# ----------------------------
+# Example 8: Update user profile
+# ----------------------------
+mutation UpdateProfile($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    id
+    username
+    email
+    profile {
+      bio
+      avatar
+      website
+    }
+    updatedAt
+  }
+}
+
+# Variables:
+# {
+#   "input": {
+#     "bio": "Full-stack developer passionate about GraphQL",
+#     "website": "https://example.com"
+#   }
+# }
+
+# ----------------------------
+# Example 9: Delete a post
+# ----------------------------
+mutation DeletePost($id: ID!) {
+  deletePost(id: $id)
+}
+
+# Variables:
+# {
+#   "id": "5"
+# }
+
+# ----------------------------
+# Example 10: Multiple mutations in one request
+# Mutations are executed SEQUENTIALLY (unlike queries which are parallel)
+# ----------------------------
+mutation CreatePostAndComment(
+  $postInput: CreatePostInput!
+  $commentInput: CreateCommentInput!
+) {
+  # First: create the post
+  newPost: createPost(input: $postInput) {
+    id
+    title
+  }
+
+  # Then: add a comment to it
+  newComment: createComment(input: $commentInput) {
+    id
+    text
+  }
+}
+
+# Variables:
+# {
+#   "postInput": {
+#     "title": "New Post",
+#     "content": "Post content"
+#   },
+#   "commentInput": {
+#     "text": "First comment!",
+#     "postId": "1"
+#   }
+# }
+
+# ----------------------------
+# Example 11: Error handling
+# GraphQL errors are returned in the response
+# ----------------------------
+mutation TryInvalidOperation {
+  createPost(input: {
+    title: "Test"
+    content: "Test"
+  }) {
+    id
+    title
+  }
+}
+
+# If not authenticated, you'll get:
+# {
+#   "errors": [
+#     {
+#       "message": "Not authenticated",
+#       "extensions": {
+#         "code": "UNAUTHENTICATED"
+#       }
+#     }
+#   ],
+#   "data": {
+#     "createPost": null
+#   }
+# }
